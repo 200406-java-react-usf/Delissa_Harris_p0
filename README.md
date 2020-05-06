@@ -18,3 +18,4 @@ Endpoint consumption presented using Postman
 
 ERD Diagram
 
+<img src="https://github.com/200406-java-react-usf/Delissa_Harris_p0/blob/master/order-api/images/Order_Managemen_%20ERD.PNG">
