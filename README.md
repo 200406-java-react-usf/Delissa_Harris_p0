@@ -1,10 +1,6 @@
 # Delissa_Harris_p0
 
-RESTful API Order Management System using TypeScript and Express
-
-Features Include 
- Unit testing
- SQL Data Persistance (at least 3 tables; all 3NF)
+RESTful API Order Management System
 
 Tech Stack
  TypeScript
@@ -13,6 +9,10 @@ Tech Stack
  Express
  Jest
  Git SCM (on GitHub)
+
+Features Include 
+ Unit testing
+ SQL Data Persistance (at least 3 tables; all 3NF)
  
 Endpoint consumption presented using Postman
 
