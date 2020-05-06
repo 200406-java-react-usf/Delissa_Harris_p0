@@ -1,6 +1,6 @@
 # Delissa_Harris_p0
 
-RESTful Order Management System API using TypeScript and Express
+RESTful API Order Management System using TypeScript and Express
 
 Features Include 
  Unit testing (>= 80% coverage)
