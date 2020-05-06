@@ -3,7 +3,7 @@
 RESTful API Order Management System using TypeScript and Express
 
 Features Include 
- Unit testing (>= 80% coverage)
+ Unit testing
  SQL Data Persistance (at least 3 tables; all 3NF)
 
 Tech Stack
