@@ -1,11 +1,12 @@
 import express from 'express';
 import AppConfig from '../config/app';
+import { adminGuard } from '../middleware/auth-middleware';
 
 export const OrderLineRouter = express.Router();
 
-const OrderLineService = AppConfig.orderService;
+const OrderLineService = AppConfig.orderLineService;
 
-OrderLineRouter.get('', async (req, resp) => {
+OrderLineRouter.get('', adminGuard, async (req, resp) => {
 
     try {
         let payload = await OrderLineService.getAllOrders();
@@ -27,10 +28,12 @@ OrderLineRouter.get('/:orderLineId', async (req, resp) => {
     resp.send();
 });
 
-// OrderRouter.post('', async (req, resp) => {
+// OrderLineRouter.post('/:orderId', async (req, resp) => {
 //     console.log('Post request received');
+//     const orderId = +req.params.orderId;
+//     const productId = +req.body.prodId;
 //     try {
-//         let newOrder = await OrderService.saveOrder(req.body);
+//         let newOrder = await OrderLineService.addNewOrder(orderId);
 //         resp.status(201).json(newOrder);
 //     } catch (e) {
 //         resp.status(e.statusCode).json(e);
@@ -38,15 +41,15 @@ OrderLineRouter.get('/:orderLineId', async (req, resp) => {
 //     resp.send();
 // });
 
-// OrderRouter.put('', async (req, resp) => {
-//     console.log('Post request received');
+// OrderLineRouter.patch('/:orderid', async (req, resp) => {
+//     const orderid = +req.params.orderId;
+//     const productId = +req.body.prodId;
 //     try {
-//         let newOrder = await OrderService.updateOrder(req.body);
-//         resp.status(201).json(newOrder);
+//         let status = await OrderLineService.updateOrder(orderid);
+//         return resp.status(204).json(status).send();
 //     } catch (e) {
-//         resp.status(e.statusCode).json(e);
+//         return resp.status(e.statusCode).json(e).send();
 //     }
-//     resp.send();
 // });
 
 OrderLineRouter.delete('', async (req, resp) => {
@@ -61,3 +64,4 @@ OrderLineRouter.delete('', async (req, resp) => {
     }
     resp.send();
 });
+

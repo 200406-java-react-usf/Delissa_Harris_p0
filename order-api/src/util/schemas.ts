@@ -19,12 +19,10 @@ export interface ProductSchema {
     product_id: number,
     product_name: string,
     description: string,
-    product_cost: number,
-    created_time: Date
+    product_cost: number
 }
 
 export interface OrderLineSchema {
-    order_line_id: number;
     product_id: number;
     order_id: number;
     quantity: number;

@@ -1,13 +1,13 @@
-import { ProductRepository } from "../repos/productRepo";
-import { Product } from "../models/product";
-import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
+import { ProductRepository } from '../repos/productRepo';
+import { Product } from '../models/product';
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from '../util/validator';
 import { 
     BadRequestError, 
     ResourceNotFoundError,
     NotImplementedError, 
     ResourcePersistenceError, 
     AuthenticationError  
-} from "../errors/errors";
+} from '../errors/errors';
 
 export class ProductService {
     constructor(private productRepo: ProductRepository) {
@@ -29,11 +29,35 @@ export class ProductService {
             throw new BadRequestError();
         }
         let product = await this.productRepo.getById(prodId);
-
         if (isEmptyObject(product)) {
             throw new ResourceNotFoundError();
         }
         return product;
+    }
+
+    async add(newProd: Product): Promise<Product> {
+        try {
+            if (!isValidObject(newProd, 'prodId')) {
+                throw new BadRequestError('Invalid property values found in provided order.');
+            }
+            let product = await this.productRepo.add(newProd);
+            return product;
+        }
+        catch (e) {
+            throw e;
+        }
+    }
+
+    async updateProduct(updatedProd: Product): Promise<boolean> {
+        try {
+            if (!isValidObject(updatedProd)) {
+                throw new BadRequestError('Invalid order provided (invalid values found).');
+            }
+            return await this.productRepo.update(updatedProd);
+        }
+        catch (e) {
+            throw e;
+        }
     }
 
     async deleteById(prodId: number): Promise<boolean> {

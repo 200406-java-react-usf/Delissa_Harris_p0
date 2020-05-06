@@ -2,7 +2,9 @@ import { UserService } from '../services/user-service';
 import { UserRepository } from '../repos/user-repo';
 import { User } from '../models/user';
 import Validator from '../util/validator';
-import { ResourceNotFoundError, BadRequestError } from '../errors/errors';
+import { ResourceNotFoundError, BadRequestError,  NotImplementedError, 
+    ResourcePersistenceError, 
+    AuthenticationError  } from '../errors/errors';
 
 jest.mock('../repos/user-repo', () => {
     
@@ -14,14 +16,13 @@ jest.mock('../repos/user-repo', () => {
             save = jest.fn();
             update = jest.fn();
             deleteById = jest.fn();
-    }
+    };
 
 });
 describe('userService', () => {
 
     let sut: UserService;
     let mockRepo;
-
     let mockUsers = [
         new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'),
         new User(2, 'bbailey', 'password', 'Bob', 'Bailey', 'bbailey@revature.com', 'User'),
@@ -41,7 +42,7 @@ describe('userService', () => {
                 save: jest.fn(),
                 update: jest.fn(),
                 deleteById: jest.fn()
-            }
+            };
         });
 
         // @ts-ignore
@@ -75,7 +76,6 @@ describe('userService', () => {
         try {
             await sut.getAllUsers();
         } catch (e) {
-
             // Assert
             expect(e instanceof ResourceNotFoundError).toBe(true);
         }
@@ -160,7 +160,6 @@ describe('userService', () => {
         // Arrange
         expect.hasAssertions();
         mockRepo.getById = jest.fn().mockReturnValue(false);
-
         // Act
         try {
             await sut.getUserById(-2);
@@ -169,7 +168,6 @@ describe('userService', () => {
             // Assert
             expect(e instanceof BadRequestError).toBe(true);
         }
-
     });
 
     test('should reject with ResourceNotFoundError if getByid is given an unknown id', async () => {
@@ -186,7 +184,113 @@ describe('userService', () => {
             // Assert
             expect(e instanceof ResourceNotFoundError).toBe(true);
         }
+    });
+
+    test('Should add a New User', async () => {
+        expect.assertions(1);
+
+        // Arrange
+        let mockUser =  new User(5, 'nnoboby', 'password', 'Nobody', 'NobodyLast', 'nnobody@revature.com', 'Customer')
+        mockRepo.add = jest.fn().mockReturnValue(true);
+
+        // Act
+        let result = await sut.addNewUser(mockUser);
+        expect(result).toBeTruthy();
 
     });
 
+    test('should reject to BadRequestError when addNewUser is given an invalid User', async () => {
+        // Arrange
+        expect.assertions(1);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+        mockRepo.addNewUser = jest.fn().mockImplementation((user: User) => {
+            return new Promise<User>((resolve) => {
+                resolve(user);
+            });
+        });
+        // Act
+        try{
+            await sut.addNewUser(new User(1, '', 'x', 'y', 'z', 'a','f'));
+        }
+        // Assert
+        catch(e){
+            expect(e instanceof BadRequestError).toBe(true);
+        }
+    });
+    
+    test('Should reject with AuthenticationError with invalid password', async () => {
+
+        // Arrange
+      
+        mockRepo.getUserByCredentials = jest.fn().mockReturnValue({});
+
+        // Act
+        try {
+            await sut.authenticateUser("aanderson", "forever");
+        } catch (e) {
+            // Assert
+            expect(e instanceof AuthenticationError).toBe(true);
+        }
+
+    });
+   
+    test('should throw NotImplementedError when deletebyId is invalid', async () => {
+
+        // Act
+        try{
+        let result = await sut.deleteById(9999);
+        }
+        // Assert
+        catch(e){
+            expect(e instanceof NotImplementedError).toBe(true);
+        }
+
+    });
+    test('should throw ResourcePersistenceError when sending a username that is Users', async () => {
+        
+        //Arrange
+        expect.hasAssertions();
+        sut.isUsernameAvailable= jest.fn().mockReturnValue(false);
+
+        //Act
+        try {
+            await sut.addNewUser(mockUsers[0]);
+        } catch (e) {
+
+            //Assert
+            expect(e instanceof ResourcePersistenceError).toBe(true);
+        }
+    });
+
+    test('should throw ResourcePersistenceError when sending a email that is Users', async () => {
+        
+        //Arrange
+        expect.hasAssertions();
+        sut.isEmailAvailable= jest.fn().mockReturnValue(false);
+
+        //Act
+        try {
+            await sut.addNewUser(mockUsers[0]);
+        } catch (e) {
+
+            //Assert
+            expect(e instanceof ResourcePersistenceError).toBe(true);
+        }
+    });
+
+
+    test('should throw BadRequestError when sending a bad value to updateUser', async () => {
+        
+        //Arrange
+        expect.hasAssertions();
+
+        //Act
+        try {
+            await sut.updateUser(null);
+        } catch (e) {
+
+            //Assert
+            expect(e instanceof BadRequestError).toBe(true);
+        }
+    });
 });

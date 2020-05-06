@@ -1,13 +1,13 @@
-import { OrderLineRepository } from "../repos/orderLineRepo";
-import { OrderLine } from "../models/orderLine";
-import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
+import { OrderLineRepository } from '../repos/orderLineRepo';
+import { OrderLine } from '../models/orderLine';
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from '../util/validator';
 import { 
     BadRequestError, 
     ResourceNotFoundError,
     NotImplementedError, 
     ResourcePersistenceError, 
     AuthenticationError  
-} from "../errors/errors";
+} from '../errors/errors';
 
 export class OrderLineService {
     constructor(private orderLineRepo: OrderLineRepository) {
@@ -25,8 +25,8 @@ export class OrderLineService {
         return orders; 
     }
 
-    async getOrderById(orderLineId: number): Promise<OrderLine> {
-        if (!isValidId(orderLineId)) {
+    async getOrderById(orderId: number): Promise<OrderLine> {
+        if (!isValidId(orderId)) {
             throw new BadRequestError();
         }
         let order = await this.orderLineRepo.getById();
@@ -37,12 +37,41 @@ export class OrderLineService {
         return order;
     }
 
-    async deleteById(OrderLineId: number): Promise<boolean> {
+   
+    async addNewOrder(newOrder: OrderLine): Promise<OrderLine> {
+        try {
+        if (!isValidObject(newOrder, 'orderId') && !isValidObject(newOrder, 'prodId') ) {
+            throw new BadRequestError('Invalid property values found in provided orderLine.');
+        }
+    
+        let orderline = await this.orderLineRepo.add(newOrder);
+        return orderline;
+    }
+    catch (e) {
+        throw e;
+    }
+}
 
-        if (!isValidId(OrderLineId)) {
+    async updateOrder(updatedOrder: OrderLine): Promise<boolean> {
+        try {
+
+            if (!isValidObject(updatedOrder)) {
+                throw new BadRequestError('Invalid order provided (invalid values found).');
+            }
+            // let repo handle some of the other checking since we are still mocking db
+            return await this.orderLineRepo.update(updatedOrder);
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async deleteById(orderId: number): Promise<boolean> {
+
+        if (!isValidId(orderId)) {
             throw new BadRequestError();
         }
-        let isDeleted = await this.orderLineRepo.deleteById(OrderLineId);
+        let isDeleted = await this.orderLineRepo.deleteById(orderId);
         return isDeleted;
     }
 }
+

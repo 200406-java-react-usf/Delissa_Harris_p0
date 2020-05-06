@@ -96,7 +96,7 @@ export class UserRepository implements CrudRepository<User> {
     
     }
 
-    async save(newUser: User): Promise<User> {
+    async add(newUser: User): Promise<User> {
             
         let client: PoolClient;
 
@@ -132,7 +132,7 @@ export class UserRepository implements CrudRepository<User> {
 
         try {
             client = await connectionPool.connect();
-            let sql = ``;
+            let sql = '';
             let rs = await client.query(sql, []);
             return true;
         } catch (e) {
@@ -149,7 +149,7 @@ export class UserRepository implements CrudRepository<User> {
 
         try {
             client = await connectionPool.connect();
-            let sql = ``;
+            let sql = '';
             let rs = await client.query(sql, []);
             return true;
         } catch (e) {

@@ -1,13 +1,13 @@
-import { User } from "../models/user";
-import { UserRepository } from "../repos/user-repo";
-import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
+import { User } from '../models/user';
+import { UserRepository } from '../repos/user-repo';
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from '../util/validator';
 import { 
     BadRequestError, 
     ResourceNotFoundError, 
     NotImplementedError, 
     ResourcePersistenceError, 
     AuthenticationError 
-} from "../errors/errors";
+} from '../errors/errors';
 
 
 export class UserService {
@@ -128,12 +128,12 @@ export class UserService {
             }
 
             newUser.role = 'User'; // all new registers have 'User' role by default
-            const persistedUser = await this.userRepo.save(newUser);
+            const persistedUser = await this.userRepo.add(newUser);
 
             return this.removePassword(persistedUser);
 
         } catch (e) {
-            throw e
+            throw e;
         }
 
     }
@@ -155,7 +155,6 @@ export class UserService {
     }
 
     async deleteById(id: number): Promise<boolean> {
-        
         try {
             throw new NotImplementedError();
         } catch (e) {
@@ -164,30 +163,30 @@ export class UserService {
 
     }
 
-    private async isUsernameAvailable(username: string): Promise<boolean> {
+     async isUsernameAvailable(username: string): Promise<boolean> {
 
         try {
             await this.getUserByUniqueKey({'username': username});
         } catch (e) {
-            console.log('username is available')
+            console.log('username is available');
             return true;
         }
 
-        console.log('username is unavailable')
+        console.log('username is unavailable');
         return false;
 
     }
 
-    private async isEmailAvailable(email: string): Promise<boolean> {
+    async isEmailAvailable(email: string): Promise<boolean> {
         
         try {
             await this.getUserByUniqueKey({'email': email});
         } catch (e) {
-            console.log('email is available')
+            console.log('email is available');
             return true;
         }
 
-        console.log('email is unavailable')
+        console.log('email is unavailable');
         return false;
     }
 

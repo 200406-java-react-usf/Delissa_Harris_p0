@@ -19,7 +19,7 @@ export class OrderRepository implements CrudRepository<Order> {
 
         try {
             client = await connectionPool.connect();
-            let sql = `select * from orders`;
+            let sql = 'select * from orders';
             let rs = await client.query(sql);
             return rs.rows.map(mapUserResultSet1);
         } catch (e) {
@@ -34,7 +34,7 @@ export class OrderRepository implements CrudRepository<Order> {
         let client : PoolClient;
         try{
             client = await connectionPool.connect();
-            let sql = `select * from orders where order_id = $1`;
+            let sql = 'select * from orders where order_id = $1';
             let rs = await client.query(sql, [order_id]);
             return mapUserResultSet1(rs.rows[0]);
         } catch (e) {
@@ -44,16 +44,31 @@ export class OrderRepository implements CrudRepository<Order> {
         }  
     }
 
-    async save(newOrd: Order): Promise<Order> {
+    async getOrderByUniqueKey(key: string, val: string): Promise<Order> {
+
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            let sql = 'select from orders where order_id = $1';
+            let rs = await client.query(sql, [val]);
+            return mapUserResultSet1(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    }
+
+    async add(newOrd: Order): Promise<Order> {
 
         let client : PoolClient;
         try {
 
             client = await connectionPool.connect();
-            let sql = `insert into orders (order_id, order_date, order_comments, user_id) values ($1, $2, $3, $4, $5, $6) returning id`;  
-            let rs = await client.query(sql, [newOrd.orderId, newOrd.orderDate, newOrd.orderDate, newOrd.comments]);
-            newOrd.orderId = rs.rows[0].orderId;
-            return newOrd;
+            let sql = 'insert into orders (order_id, order_date, order_comments, user_id) values ($1, $2, $3, $4);';  
+            let rs = await client.query(sql, [newOrd.orderId, newOrd.orderDate, newOrd.comments, newOrd.id]);
+            return mapUserResultSet1(rs.rows[0]);
 
         } catch (e) {
             throw new InternalServerError();
@@ -62,14 +77,14 @@ export class OrderRepository implements CrudRepository<Order> {
         }
     }
 
-    async update(updatedOrder: Order): Promise<boolean> {
+    async update(updateOrd: Order): Promise<boolean> {
         
         let client: PoolClient;
 
         try {
             client = await connectionPool.connect();
-            let sql = ``;
-            let rs = await client.query(sql, []);
+            let sql = 'update orders set order_date = $2, order_comments = $3, user_id = $4 where order_id = $1;';
+            await client.query(sql, [updateOrd.orderId, updateOrd.orderDate, updateOrd.comments, updateOrd.id]);
             return true;
         } catch (e) {
             throw new InternalServerError();
@@ -82,10 +97,8 @@ export class OrderRepository implements CrudRepository<Order> {
         let client : PoolClient;
         try {
             client = await connectionPool.connect();
-
-            let sql = `delete from orders where order_id = $1`;
-            let rs = await client.query(sql, [order_id]);
-            
+            let sql = 'delete from orders where order_id = $1';
+            await client.query(sql, [order_id]);
             return true;
         } catch (e) {
             throw new InternalServerError();

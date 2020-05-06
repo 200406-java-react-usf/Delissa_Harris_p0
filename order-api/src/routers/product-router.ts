@@ -1,5 +1,6 @@
 import express from 'express';
 import AppConfig from '../config/app';
+import { adminGuard } from '../middleware/auth-middleware';
 
 export const ProductRouter = express.Router();
 
@@ -27,32 +28,30 @@ ProductRouter.get('/:prodId', async (req, resp) => {
     resp.send();
 });
 
-// ProductRouter.post('', async (req, resp) => {
-//     console.log('Post request received');
-//     try {
-//         let newProd = await ProductService.saveProdct(req.body);
-//         resp.status(201).json(newProd);
-//     } catch (e) {
-//         resp.status(e.statusCode).json(e);
-//     }
-//     resp.send();
-// });
+ProductRouter.post('', async (req, resp) => {
+    console.log('Post request received');
+    try {
+        let newProd = await ProductService.add(req.body);
+        resp.status(201).json(newProd);
+    } catch (e) {
+        resp.status(e.statusCode).json(e);
+    }
+    resp.send();
+});
 
-// ProductRouter.put('', async (req, resp) => {
-//     console.log('Post request received');
-//     try {
-//         let newProd = await ProductService.updateOrder(req.body);
-//         resp.status(201).json(newProd);
-//     } catch (e) {
-//         resp.status(e.statusCode).json(e);
-//     }
-//     resp.send();
-// });
+ProductRouter.put('', adminGuard, async (req, resp) => {
+    console.log('Put request received');
+    try {
+        let newProd = await ProductService.updateProduct(req.body);
+        resp.status(201).json(newProd);
+    } catch (e) {
+        resp.status(e.statusCode).json(e);
+    }
+    resp.send();
+});
 
-ProductRouter.delete('', async (req, resp) => {
+ProductRouter.delete('', adminGuard, async (req, resp) => {
     console.log('Delete request received');
-    console.log(req.body);
-
     try {
         let result = await ProductService.deleteById(req.body.prodId);
         resp.status(202).json(result);

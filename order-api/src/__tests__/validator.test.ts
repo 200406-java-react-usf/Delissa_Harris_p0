@@ -1,6 +1,6 @@
-import { isValidId, isValidStrings, isValidObject, isPropertyOf } from "../util/validator";
-import { User } from "../models/user";
-import { Order } from "../models/order";
+import { isValidId, isValidStrings, isValidObject, isPropertyOf } from '../util/validator';
+import { User } from '../models/user';
+import { Order } from '../models/order';
 
 describe('validator', () => {
 
@@ -131,7 +131,7 @@ describe('validator', () => {
         let result2 = isValidObject(new User(0, 'username', 'password', 'first', 'last', 'email', 'role'), 'id');
 
         // Assert
-       // expect(result1).toBe(true);
+        // expect(result1).toBe(true);
         expect(result2).toBe(true);
 
     });
@@ -219,4 +219,4 @@ describe('validator', () => {
 
     });
 
-})
+});

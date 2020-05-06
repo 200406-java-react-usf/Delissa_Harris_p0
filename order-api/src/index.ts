@@ -6,6 +6,7 @@ import path from 'path';
 
 import { UserRouter } from './routers/user-router';
 import { OrderRouter } from './routers/order-router';
+import { OrderLineRouter } from './routers/orderLine-router';
 import { ProductRouter } from './routers/product-router';
 import { AuthRouter } from './routers/auth-router';
 import { sessionMiddleware } from './middleware/session-middleware';
@@ -37,6 +38,7 @@ app.use(corsFilter);
 app.use('/', express.json());
 app.use('/users', UserRouter);
 app.use('/orders', OrderRouter);
+app.use('/orderline', OrderLineRouter);
 app.use('/products', ProductRouter);
 app.use('/auth', AuthRouter);
 

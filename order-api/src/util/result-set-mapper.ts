@@ -1,11 +1,11 @@
-import { UserSchema } from "./schemas";
-import { OrderSchema } from "./schemas";
-import { ProductSchema } from "./schemas";
-import { OrderLineSchema } from "./schemas";
-import { User } from "../models/user";
-import { Order } from "../models/order";
-import { Product } from "../models/product";
-import { OrderLine } from "../models/orderLine";
+import { UserSchema } from './schemas';
+import { OrderSchema } from './schemas';
+import { ProductSchema } from './schemas';
+import { OrderLineSchema } from './schemas';
+import { User } from '../models/user';
+import { Order } from '../models/order';
+import { Product } from '../models/product';
+import { OrderLine } from '../models/orderLine';
 
 export function mapUserResultSet(resultSet: UserSchema): User {
     
@@ -34,7 +34,7 @@ export function mapUserResultSet1(resultSet: OrderSchema): Order {
         resultSet.order_id,
         resultSet.order_date,
         resultSet.order_comments,
-        resultSet.user_id,
+        resultSet.user_id
     );
 }
 
@@ -45,9 +45,8 @@ export function mapUserResultSet2(resultSet: OrderLineSchema): OrderLine {
     }
 
     return new OrderLine(
-        resultSet.order_line_id,
-        resultSet.order_id,
         resultSet.product_id,
+        resultSet.order_id,
         resultSet.quantity
     );
 }
@@ -62,7 +61,6 @@ export function mapUserResultSet3(resultSet: ProductSchema): Product {
         resultSet.product_id,
         resultSet.product_name,
         resultSet.description,
-        resultSet.product_cost,
-        resultSet.created_time,
+        resultSet.product_cost
     );
 }

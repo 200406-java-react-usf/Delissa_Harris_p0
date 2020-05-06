@@ -19,7 +19,7 @@ export class OrderLineRepository implements CrudRepository<OrderLine> {
 
         try {
             client = await connectionPool.connect();
-            let sql = `select * from order_line`;
+            let sql = 'select * from order_line';
             let rs = await client.query(sql);
             return rs.rows.map(mapUserResultSet2);
         } catch (e) {
@@ -34,7 +34,7 @@ export class OrderLineRepository implements CrudRepository<OrderLine> {
         let client : PoolClient;
         try{
             client = await connectionPool.connect();
-            let sql = `select * from order_line where order_line_id = $1`;
+            let sql = 'select * from order_line where product_id = $1';
             let rs = await client.query(sql);
             return mapUserResultSet2(rs.rows[0]);
         } catch (e) {
@@ -44,16 +44,31 @@ export class OrderLineRepository implements CrudRepository<OrderLine> {
         }  
     }
 
-    async save(newOrd: OrderLine): Promise<OrderLine> {
+    async getOrderLineByUniqueKey(key: string, val: string): Promise<OrderLine> {
+
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            let sql = `select * from order_line where order_id = $2 and product_id = $1`;
+            let rs = await client.query(sql, [val]);
+            return mapUserResultSet2(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    }
+
+    async add(newOrd: OrderLine): Promise<OrderLine> {
 
         let client : PoolClient;
         try {
 
             client = await connectionPool.connect();
-            let sql = `insert into order_line (order_line_id, product_id, order_id, quantity) values ($1, $2, $3, $4, $5, $6) returning id`;  
-            let rs = await client.query(sql, [newOrd.orderLineId, newOrd.prodId,newOrd.orderId, newOrd.quantity]);
-            newOrd.orderLineId = rs.rows[0].orderLineId;
-            return newOrd;
+            let sql = 'insert into order_line (product_id, order_id, quantity) values ($1, $2, $3)';  
+            let rs = await client.query(sql, [newOrd.prodId, newOrd.orderId, newOrd.quantity]);
+            return mapUserResultSet2(rs.rows[0].orderId);
 
         } catch (e) {
             throw new InternalServerError();
@@ -62,14 +77,14 @@ export class OrderLineRepository implements CrudRepository<OrderLine> {
         }
     }
 
-    async update(updatedOrder: OrderLine): Promise<boolean> {
+    async update(updateOrd: OrderLine): Promise<boolean> {
         
         let client: PoolClient;
 
         try {
             client = await connectionPool.connect();
-            let sql = ``;
-            let rs = await client.query(sql, []);
+            let sql = 'update order_line set quantity = $3 where product_id = $1 and order_id = $2';
+            await client.query(sql, [updateOrd.prodId, updateOrd.orderId, updateOrd.quantity]);
             return true;
         } catch (e) {
             throw new InternalServerError();
@@ -78,14 +93,13 @@ export class OrderLineRepository implements CrudRepository<OrderLine> {
         }
     
     }
-    async deleteById(order_line_id: number): Promise<boolean> {
+    async deleteById(order_id: number): Promise<boolean> {
         let client : PoolClient;
         try {
             client = await connectionPool.connect();
 
-            let sql = `delete from order_line where order_line_id = $1`;
-            let rs = await client.query(sql [order_line_id]);
-            
+            let sql = 'delete from order_line where order_id = $2 and product_id = $1';
+            await client.query(sql [order_id]);
             return true;
         } catch (e) {
             throw new InternalServerError();

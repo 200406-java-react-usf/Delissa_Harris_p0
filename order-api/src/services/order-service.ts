@@ -1,13 +1,13 @@
-import { OrderRepository } from "../repos/orderRepo";
-import { Order } from "../models/order";
-import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
+import { OrderRepository } from '../repos/orderRepo';
+import { Order } from '../models/order';
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from '../util/validator';
 import { 
     BadRequestError, 
     ResourceNotFoundError,
     NotImplementedError, 
     ResourcePersistenceError, 
     AuthenticationError  
-} from "../errors/errors";
+} from '../errors/errors';
 
 export class OrderService {
     constructor(private orderRepo: OrderRepository) {
@@ -36,10 +36,33 @@ export class OrderService {
             throw new ResourceNotFoundError();
         }
 
-        return order
+        return order;
 
     }
-
+   
+    async addNewOrder(newOrder: Order): Promise<Order> {
+        try {
+            if (!isValidObject(newOrder, 'orderId')) {
+                throw new BadRequestError('Invalid property values found in provided.');
+            }
+            let order = await this.orderRepo.add(newOrder);
+            return order;
+        }
+        catch (e) {
+            throw e;
+        }
+    }
+    async updateOrder(updatedOrder: Order): Promise<boolean> {
+        try {
+            if (!isValidObject(updatedOrder)) {
+                throw new BadRequestError('Invalid order provided (invalid values found).');
+            }
+            return await this.orderRepo.update(updatedOrder);
+        }
+        catch (e) {
+            throw e;
+        }
+    }
     async deleteById(OrderId: number): Promise<boolean> {
 
         if (!isValidId(OrderId)) {
